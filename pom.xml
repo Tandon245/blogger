@@ -95,6 +95,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>Blogger</finalName>
 	</build>
 
 </project>
