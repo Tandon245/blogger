@@ -2,47 +2,57 @@ package tandon.blogger.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tandon.blogger.dto.FollowDTO;
 import tandon.blogger.model.Follow;
+import tandon.blogger.model.User;
 import tandon.blogger.repository.IFollowRepository;
+import tandon.blogger.repository.IUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class FollowService {
-
     @Autowired
     private IFollowRepository followRepository;
-    List<Follow> follows = new ArrayList<>();
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
-    public Follow addFollow(Follow follow) {
-        follows.add(followRepository.save(follow));
+    List<String> allFollowers = new ArrayList<>();
+    List<String> allFollowing = new ArrayList<>();
+
+
+    public Follow addFollower(FollowDTO followDTO) {
+        Follow follow = new Follow();
+        Long followerId = followDTO.getFollowingId();
+        Long followingId = followDTO.getFollowingId();
+        follow.setFollowerId(userRepository.findById(followingId).orElse(null));
+        follow.setFollowingId(userRepository.findById(followerId).orElse(null));
+        if (userRepository.findById(followingId).orElse(null) != null) {
+            Optional<User> followingUser = userRepository.findById(followerId);
+            Optional<User> followerUser = userRepository.findById(followingId);
+            String follower =followerUser.get().getUserName();
+            String following =followingUser.get().getUserName();
+            allFollowers.add(follower);
+            allFollowing.add(following);
+
+
+        }
         return followRepository.save(follow);
+
     }
 
-    public Follow getFollowsByFollowId(Long followId) {
-        for (Follow follow : follows) {
-            if (follow.getFollowId() == followId) {
-                return follow;
-            }
-        }
-        return null;
+    public List<String> getAllFollowers(){
+        return allFollowers;
     }
 
-    public Follow deleteFollow(Long followId) {
-        Follow existingFollow = getFollowsByFollowId(followId);
-        for (Follow follow : follows) {
-            if (existingFollow == follow) {
-                follows.remove(follow);
-                return follow;
-            }
-        }
-        return null;
+    public List<String> getAllFollowing(){
+        return allFollowing;
     }
 
-public  List<Follow> allFollows(){
-        return follows;
-}
 
 }

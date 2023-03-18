@@ -25,7 +25,7 @@ public class Post {
 
     @NotBlank(message = "Body is required")
     @Column(nullable = false, length = 10000)
-    private String body;
+    private String postBody;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -36,7 +36,6 @@ public class Post {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+
 
 }
