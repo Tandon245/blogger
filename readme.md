@@ -54,5 +54,5 @@ The Blogger Web Application is a full-stack web application that allows users to
 
 ## Deployment
 
-The application has been deployed on an AWS EC2 instance, and can be accessed using the following URL: http://16.170.164.237:8080/swagger-ui/index.html#/
+The application has been deployed on an AWS EC2 instance, and can be accessed using the following URL: http://13.233.203.246:8080/swagger-ui/index.html#/
 
