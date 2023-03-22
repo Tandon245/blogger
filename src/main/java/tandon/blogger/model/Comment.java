@@ -37,5 +37,4 @@ public class Comment {
     @Column(name = "comment_body")
     private String commentBody;
 
-
 }

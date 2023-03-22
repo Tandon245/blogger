@@ -30,12 +30,10 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUserName(username);
-    }
+
 
     public Optional<User> updateUser(Long userId, User user) {
-        Optional<User> user1=userRepository.findById(userId);
+        Optional<User> user1=userRepository.findById(user.getUserId());
         user1.get().setUserId(userId);
         user1.get().setPhoneNumber(user.getUserName());
         user1.get().setUserName(user.getUserName());
@@ -45,12 +43,14 @@ public class UserService {
         user1.get().setFirstName(user.getFirstName());
         user1.get().setLastName(user.getLastName());
         user1.get().setPassword(user.getPassword());
+        userRepository.save(user);
         return user1;
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
 
     public List<String> getAllUsernames() {
         List<User> users = userRepository.findAll();
@@ -73,8 +73,10 @@ public class UserService {
     }
 
 
-    public Optional<User> getUserDetails(Long userId){
-        Optional<User> user=userRepository.findById(userId);
-        return user;
+    public User getUserDetails(Long userId){
+        if(userRepository.findById(userId).isPresent()){
+            return userRepository.findById(userId).get();
+        }
+       return null;
     }
 }

@@ -43,10 +43,10 @@ public class FollowController {
     public ResponseEntity<List<String>> getAllFollowers(@PathVariable Long userId) {
 
         if (userRepository.findById(userId).isPresent() && followService.getFollowers(userId) != null) {
-            return new ResponseEntity<>(followService.getFollowers(userId), HttpStatus.FOUND);
+            return new ResponseEntity<>(followService.getFollowers(userId), HttpStatus.OK);
 
         } else if (userRepository.findById(userId).isPresent() && followService.getFollowers(userId) == null) {
-            return new ResponseEntity<>(List.of("No one is following this user"), HttpStatus.FOUND);
+            return new ResponseEntity<>(List.of("No one is following this user"), HttpStatus.OK);
         }
         return new ResponseEntity<>(List.of("User with userId " + userId + " doesn't exist in Blogger"), HttpStatus.NOT_FOUND);
     }
@@ -54,9 +54,9 @@ public class FollowController {
     @GetMapping("/followings/{userId}")
     public ResponseEntity<List<String>> getAllFollowing(@PathVariable Long userId) {
         if (userRepository.findById(userId).isPresent() && followService.getFollowings(userId) != null) {
-            return new ResponseEntity<>(followService.getFollowings(userId), HttpStatus.FOUND);
+            return new ResponseEntity<>(followService.getFollowings(userId), HttpStatus.OK);
         } else if (userRepository.findById(userId).isPresent() && followService.getFollowings(userId) == null) {
-            return new ResponseEntity<>(List.of("User with userId " + userId + " doesn't following any user"), HttpStatus.FOUND);
+            return new ResponseEntity<>(List.of("User with userId " + userId + " doesn't following any user"), HttpStatus.OK);
         }
         return new ResponseEntity<>(List.of("User with userId " + userId + " doesn't exist in Blogger"), HttpStatus.NOT_FOUND);
     }

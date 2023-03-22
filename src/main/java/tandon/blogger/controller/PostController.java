@@ -9,10 +9,13 @@ import tandon.blogger.model.Post;
 import tandon.blogger.repository.IPostRepository;
 import tandon.blogger.repository.IUserRepository;
 import tandon.blogger.service.PostService;
+import tandon.blogger.service.UserService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
@@ -23,6 +26,8 @@ public class PostController {
     private IUserRepository userRepository;
     @Autowired
     private IPostRepository postRepository;
+    @Autowired
+    private UserService userService;
 
 
     @PostMapping("/addPost")
@@ -39,34 +44,39 @@ public class PostController {
 
 
     @GetMapping("/getPostsByUserId/{userId}")
-    public ResponseEntity<List<String>> getPostsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<Map<String, String>>> getPostsByUserId(@PathVariable Long userId) {
         if (!userRepository.findById(userId).isPresent()) {
-            return new ResponseEntity<>(List.of("User with userId " + userId + " doesn't exist"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(List.of(Map.of("message", "User with userId " + userId + " doesn't exist")), HttpStatus.NOT_FOUND);
         }
-
-        if (postService.getPostByUserId(userId) == null) {
-            return new ResponseEntity<>(List.of("User with userId " + userId + " haven't posted any post"), HttpStatus.FOUND);
+        List<Post> posts = postService.getPostByUserId(userId);
+        if (posts == null) {
+            return new ResponseEntity<>(List.of(Map.of("message", "User with userId " + userId + " haven't posted any post")), HttpStatus.OK);
         }
-
-        List<Post> allPosts = new ArrayList<>();
-        allPosts = postService.getPostByUserId(userId);
-        List<String> postBody = new ArrayList<>();
-        for (Post post : allPosts) {
-            postBody.add(post.getPostBody());
+        List<Map<String, String>> postDetails = new ArrayList<>();
+        for (Post post : posts) {
+            Map<String, String> details = new HashMap<>();
+            details.put("postId", String.valueOf(post.getPostId()));
+            details.put("postBody", post.getPostBody());
+            postDetails.add(details);
         }
-        return new ResponseEntity<>(postBody, HttpStatus.FOUND);
+        return new ResponseEntity<>(postDetails, HttpStatus.OK);
     }
+
 
     @PutMapping("updatePost/{userId}/{postId}/{password}")
     public ResponseEntity<String> updatePost(@PathVariable Long userId, @PathVariable Long postId, @PathVariable String password, @RequestBody PostDTO postDTO) {
-        if (userRepository.findById(userId).isPresent() && postRepository.findById(postId).isPresent()) {
+        if (userRepository.findById(userId).isPresent() && postRepository.findById(postId).isPresent() && postDTO.getUserId() == userId) {
             if (userRepository.findById(userId).get().getPassword().equals(password)) {
-              Optional<Post> updatedPost=  postService.updatePost(userId, postId, postDTO);
-                return new ResponseEntity<>("Post with post Id "+updatedPost.get().getPostId()+" updated\n"+updatedPost, HttpStatus.OK);
+
+
+                Post existingPost = postService.updatePost(userId, postId, postDTO);
+                return new ResponseEntity<>("Post  updated successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Wrong Password", HttpStatus.FORBIDDEN);
             }
-            return new ResponseEntity<>("password didn't match", HttpStatus.FORBIDDEN);
+
         }
-        return new ResponseEntity<>("please enter valid details", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Invalid credentials ", HttpStatus.BAD_REQUEST);
     }
 
 }
