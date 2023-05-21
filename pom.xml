@@ -102,7 +102,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>Blogger</finalName>
+		<finalName>blogger</finalName>
 	</build>
 
 </project>
